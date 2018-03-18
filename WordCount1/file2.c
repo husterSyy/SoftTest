@@ -1,0 +1,2 @@
+int main
+po nm
