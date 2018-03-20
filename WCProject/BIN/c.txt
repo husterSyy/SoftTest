@@ -1,4 +1,0 @@
-#$Vs w
-int main,this
-
-printf
