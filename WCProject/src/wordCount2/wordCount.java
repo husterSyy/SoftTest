@@ -15,6 +15,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -26,6 +27,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.text.AbstractDocument.BranchElement;
 	/*
 	 * *
 	wc.exe -s            //递归处理目录下符合条件的文件
@@ -81,7 +83,7 @@ class SelectFile extends JFrame implements ActionListener
        
    }
 }
-public class WordCountExpand {
+public class wordCount {
 	
 	private static ArrayList<String> listname = new ArrayList<String>();
 	public static void main(String[] args) throws Exception{
@@ -100,6 +102,9 @@ public class WordCountExpand {
 			boolean oflag = false;
 			boolean tflag = false;
 	        boolean xflag=false;
+	    //    Scanner scanner=new Scanner(System.in);
+	     //   String str=scanner.nextLine();
+	      //  String[] s=str.split(" ");
 
 			for(int i=0;i<args.length;i++){ 
 				if(args[i].equals("-x")){
@@ -123,28 +128,8 @@ public class WordCountExpand {
 					sflag=true;
 					
 			    }
-				else if(args[i].contains("*.c")){
-					//matchFile=new File(s[++i]);
-					if (args[i].contains("\\")) {
-
-						String[] sn = args[i].split("\\"); 
-
-					}
-
-					else {
-						matchFileName = ".";          //当前路径
-					}
-					
-					ArrayList<String> sourceFileName = readAllFile(
-							matchFileName, args[i]);
-                   
-					sourceFile = new File[sourceFileName.size()];
-					for (int j = 0; j < sourceFileName.size(); j++) {
-						System.out.println(sourceFileName.get(j));
-						sourceFile[j] = new File(sourceFileName.get(j));
-					}
-					
-				}
+		
+		            			
 				//返回更复杂的数据（代码行 / 空行 / 注释行）
 				else if(args[i].equals("-a")){
 					aflag=true;
@@ -173,6 +158,37 @@ public class WordCountExpand {
 					sourceFile=new File[1];
 					sourceFile[0]=new File(args[i]);				
 					}
+				else {
+					String filepath=args[i];
+					//ArrayList<String> filePath = readAllFile(
+						//	matchFileName, args[i]);
+					 ArrayList<String> filePath=new ArrayList<String>();
+					File file=new File(System.getProperty("user.dir"));
+		            String suff=filepath.substring(filepath.lastIndexOf("*")+1);//取出文件后缀
+		            filePath=getAllFilePaths(file,filePath);
+		            int count=0;
+		            for(i=0;i<filePath.size();i++){//统计每个符合条件的文件的内容
+		                if(filePath.get(i).endsWith(suff)){
+		                count++;
+		 
+		          
+		                }
+				}
+		         //   System.out.println(count);
+		            sourceFile=new File[count];
+		            count=0;
+		            for(i=0;i<filePath.size();i++){//统计每个符合条件的文件的内容
+		                if(filePath.get(i).endsWith(suff)){
+		                	String fName=filePath.get(i).trim();
+		                sourceFile[count]=new File(fName.substring(fName.lastIndexOf("\\")+1));
+		             //   System.out.println(sourceFile[count].getName());
+		                count++;
+		                
+		                }
+				}
+		           
+					
+				}
 			
 			}
 			
@@ -181,14 +197,16 @@ public class WordCountExpand {
 		        	 outputFile=new File("result.txt");
 		      
 		         } 
-		        // FileWriter fW=new FileWriter(outputFile,true);
-			   FileWriter fW=new FileWriter(outputFile);
+		        FileWriter fW=new FileWriter(outputFile,true);
+			  // FileWriter fW=new FileWriter(outputFile);
 		         BufferedWriter bw=new BufferedWriter(fW);
-		    
+		         bw.write("------------");
+		         bw.write("\n");
 		         int j=0;String str1="";
 		         String name="";
 		         while(j<sourceFile.length){
 		        	 name=sourceFile[j].getName();
+		        	// System.out.println(name);
 		        	if(eflag){
 		        		 str1=name+", 单词数: "+countWordsS(sourceFile[j], stopFile);
 		        		 bw.write(str1+"\r\n");
@@ -249,9 +267,23 @@ public class WordCountExpand {
 	     bw.close();
 		
 	}
-   
+	
+	public static ArrayList<String> getAllFilePaths(File filepath,ArrayList<String> filePaths){
+        File[] array=filepath.listFiles();
+        if(array==null)
+            return filePaths;
+        for(File f:array){
+            if(f.isDirectory()){//递归读取子目录下内容
+                filePaths.add(f.getPath());
+                getAllFilePaths(f,filePaths);
+            }else{
+                filePaths.add(f.getPath());
+            }
+        }
+        return filePaths;
+    }
 
-
+  
 	public static ArrayList<String>  readAllFile(String filepath,String pattern) {
 		
 		//File file= new File(filepath);
@@ -317,8 +349,7 @@ public class WordCountExpand {
 		
 		return listname;
 	}
-	//directory.getCanonicalPath(); //得到的是C:/test/abc 
-   
+
   
     // 停用词表，统计文件单词总数时，不统计该表中的单词
     private static int countWordsS(File file1,File file2) throws Exception {    
@@ -481,9 +512,7 @@ public class WordCountExpand {
 		
 		br.close();
 		return countC;
-	//	System.out.println(countC);
-	//	System.out.println(--countW);   //--countW文本最后一行先后有空格和回车换行使得单词计算两次，故作减一处理。
-	//	System.out.println(countL);
+	
 	}
 	private static int countWords(File file) throws FileNotFoundException, IOException {
 
@@ -525,7 +554,7 @@ public class WordCountExpand {
 		}
 		
 		br.close();
-		return  countW;     //--countW文本最后一行先后有空格和回车换行使得单词计算两次，故作减一处理。
+		return  countW;     
 
 	}
 	
@@ -573,6 +602,7 @@ public class WordCountExpand {
 		return ++countL;
 	
 	}
+
 
 	
 }
