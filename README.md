@@ -20,10 +20,4 @@ A git for store SoftTest projects
 
 其他基本命令和扩展命令均可正常运行。
 
-关于2个Contributors：
 
-1个用户名为husterSyy,1个为1329651，两个均为本人，1329651本来是我更改github用户名的，结果github给我创建了一个用户，提交的用户显示是1329651，
-
-修改readme.md显示则是husterSyy用户，对github不是很了解的我也不知道怎么更改提交用户名，百度也没查到结果。
-
-因此说明一下。
